@@ -52,9 +52,9 @@ public class LinearRecyclerViewActivity extends Activity {
         recyclerView.setAdapter(adapter);
         //设置刷新完成以后，headerview固定的时间
         xRefreshView.setPinnedTime(1000);
-        xRefreshView.setPullLoadEnable(true);
+        xRefreshView.setPullLoadEnable(false);
         xRefreshView.setMoveForHorizontal(true);
-        xRefreshView.setAutoLoadMore(false);
+//        xRefreshView.setAutoLoadMore(true);
         adapter.setCustomLoadMoreView(new XRefreshViewFooter(this));
         //设置静默加载时提前加载的item个数
 //        xRefreshView.setPreLoadCount(4);
@@ -67,6 +67,8 @@ public class LinearRecyclerViewActivity extends Activity {
                     @Override
                     public void run() {
                         xRefreshView.stopRefresh();
+
+                        xRefreshView.setPullLoadEnable(true);
                     }
                 }, 500);
             }
@@ -75,10 +77,12 @@ public class LinearRecyclerViewActivity extends Activity {
             public void onLoadMore(boolean isSlience) {
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-//                        for (int i = 0; i < 6; i++) {
-//                            adapter.insert(new Person("More ", mLoadCount + "21"),
-//                                    adapter.getAdapterItemCount());
-//                        }
+                        xRefreshView.setPullLoadEnable(false);
+
+                        for (int i = 0; i < 6; i++) {
+                            adapter.insert(new Person("More ", mLoadCount + "21"),
+                                    adapter.getAdapterItemCount());
+                        }
                         mLoadCount++;
 
                         if (mLoadCount >= 5) {
