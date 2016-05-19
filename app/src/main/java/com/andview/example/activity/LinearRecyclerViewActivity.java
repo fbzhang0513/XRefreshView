@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LinearRecyclerViewActivity extends Activity {
+
     RecyclerView recyclerView;
     SimpleAdapter adapter;
     List<Person> personList = new ArrayList<Person>();
@@ -52,7 +53,7 @@ public class LinearRecyclerViewActivity extends Activity {
         recyclerView.setAdapter(adapter);
         //设置刷新完成以后，headerview固定的时间
         xRefreshView.setPinnedTime(1000);
-        xRefreshView.setPullLoadEnable(false);
+        xRefreshView.setPullLoadEnable(true);
         xRefreshView.setMoveForHorizontal(true);
 //        xRefreshView.setAutoLoadMore(true);
         adapter.setCustomLoadMoreView(new XRefreshViewFooter(this));
@@ -67,8 +68,6 @@ public class LinearRecyclerViewActivity extends Activity {
                     @Override
                     public void run() {
                         xRefreshView.stopRefresh();
-
-                        xRefreshView.setPullLoadEnable(true);
                     }
                 }, 500);
             }
@@ -77,23 +76,11 @@ public class LinearRecyclerViewActivity extends Activity {
             public void onLoadMore(boolean isSlience) {
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-                        xRefreshView.setPullLoadEnable(false);
-
                         for (int i = 0; i < 6; i++) {
                             adapter.insert(new Person("More ", mLoadCount + "21"),
-                                    adapter.getAdapterItemCount());
+                                           adapter.getAdapterItemCount());
                         }
-                        mLoadCount++;
-
-                        if (mLoadCount >= 5) {
-                            xRefreshView.setLoadComplete(true);
-                        } else {
-                            // 刷新完成必须调用此方法停止加载
-                            xRefreshView.stopLoadMore();
-                            //当数据加载失败时，可以调用以下方法，传入false，不传默认为true
-                            // 同时在Footerview的onStateFinish(boolean hideFooter)，可以在hideFooter为false时，显示数据加载失败的ui
-//                            xRefreshView.stopLoadMore(false);
-                        }
+                        xRefreshView.stopLoadMore();
                     }
                 }, 1000);
             }
@@ -140,11 +127,14 @@ public class LinearRecyclerViewActivity extends Activity {
                 isList = !isList;
 
                 if (isList) {
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                    LinearLayoutManager
+                            layoutManager =
+                            new LinearLayoutManager(getApplicationContext());
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     recyclerView.setLayoutManager(layoutManager);
                 } else {
-                    recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+                    recyclerView
+                            .setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
                 }
                 //当切换layoutManager时，需调用此方法
                 xRefreshView.notifyLayoutManagerChanged();
